@@ -15,3 +15,7 @@ modules:
     resource_request:
       cpu: 100 # in millicores
       memory: 1024 # in megabytes
+    links:
+      - database
+  - name: database
+    type: aws-postgres
