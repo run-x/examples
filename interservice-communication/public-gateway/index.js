@@ -6,8 +6,8 @@ const request = require("axios");
 app.get("/", (req, res) => {
   request
     .get("http://app.examples-internal-service/data")
-    .then((internalServiceRes) => {
-      res.json(internalServiceRes);
+    .then(({ data }) => {
+      res.json(data);
     })
     .catch((err) => {
       res.status(500).json(err);
