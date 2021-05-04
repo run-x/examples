@@ -1,0 +1,46 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CI-CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  opta-deploy-staging:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    env:
+      working-directory: ./interservice-communication/public-gateway
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup ssh
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEPLOYER_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.DEPLOYER_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Build image
+        working-directory: ${{ env.working-directory }}
+        run: docker build -t app:${{ github.sha }} -f Dockerfile .
+
+      - name: Update deployment
+        working-directory: ${{ env.working-directory }}
+        shell: bash
+        run: |
+          VERSION=0.11.18 /bin/bash -c "$(curl -fsSL https://docs.runx.dev/install.sh)"
+          ~/.opta/opta deploy --image app:${{ github.sha }} --env staging --auto-approve
