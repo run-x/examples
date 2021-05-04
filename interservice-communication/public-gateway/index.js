@@ -10,7 +10,7 @@ app.get("/", (req, res) => {
       res.json(internalServiceRes);
     })
     .catch((err) => {
-      res.statusCode(500).json(err);
+      res.status(500).json(err);
     });
 });
 
