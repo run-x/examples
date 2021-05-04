@@ -30,11 +30,11 @@ jobs:
           aws-region: us-east-1
 
       - name: Build image
-        working-directory: $${env.working-directory}
+        working-directory: ${{ env.working-directory }}
         run: docker build -t app:${{ github.sha }} -f Dockerfile .
 
       - name: Update deployment
-        working-directory: $${env.working-directory}
+        working-directory: ${{ env.working-directory }}
         shell: bash
         run: |
           VERSION=0.11.18 /bin/bash -c "$(curl -fsSL https://docs.runx.dev/install.sh)"
