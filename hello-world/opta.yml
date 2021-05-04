@@ -2,7 +2,7 @@ environments:
   - name: staging
     path: "git@github.com:run-x/runx-infra.git//staging/opta.yml?ref=main"
     variables: {}
-name: examples-hello-world
+name: hello-world
 modules:
   - type: k8s-service
     name: app
