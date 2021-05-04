@@ -14,26 +14,14 @@ jobs:
     name: Deploy Staging
     runs-on: ubuntu-latest
     needs: [compile, lint]
-    if: ${{ github.ref == 'refs/heads/main' }}
+    # if: ${{ github.ref == 'refs/heads/main' }}
 
     env:
-      IMAGE_VERSION: ${{ github.sha }}
+      working-directory: ./hello-world
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-
-      - name: Setup ssh
-        uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Checkout runxc
-        uses: actions/checkout@v2
-        with:
-          repository: "run-x/runxc"
-          path: "runxc"
-          ssh-key: ${{ secrets.SSH_KEY }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -43,9 +31,11 @@ jobs:
           aws-region: us-east-1
 
       - name: Build image
+        working-directory: $${env.working-directory}
         run: docker build -t app:${{ github.sha }} -f Dockerfile .
 
       - name: Update deployment
+        working-directory: $${env.working-directory}
         shell: bash
         run: |
           VERSION=0.11.18 /bin/bash -c "$(curl -fsSL https://docs.runx.dev/install.sh)"
