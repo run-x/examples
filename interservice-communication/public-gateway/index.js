@@ -5,7 +5,7 @@ const request = require("axios");
 
 app.get("/", (req, res) => {
   request
-    .get("http://app.internal-service")
+    .get("http://app.examples-internal-service")
     .then((internalServiceRes) => {
       res.json(internalServiceRes);
     })
